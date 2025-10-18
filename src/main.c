@@ -80,6 +80,11 @@ int main(void)
     // Initialize the LCD display
     LCD_Init();
 
+    // --- ADC Initialization Block ---
+    adc_chan_config_t adc_channel_config;
+    ADC_DRV_InitChanStruct(&adc_channel_config);
+    adc_channel_config.channel = ADC_INPUTCHAN_EXT12; // Corresponds to your configured ADC pin
+
     /*--------------------------------------------------*/
     /* 2. Display Static Content on LCD           */
     /*--------------------------------------------------*/
@@ -88,16 +93,13 @@ int main(void)
     OSIF_TimeDelay(2);
     LCD_SendCommand(0x80); // Move cursor to the beginning of the first line
     LCD_SendString("Temperature:");
-
+    
     /*--------------------------------------------------*/
     /* 3. Main Loop                     */
     /*--------------------------------------------------*/
     while (1)
-    {
-        // --- Read Temperature from Sensor ---
-        adc_chan_config_t adc_channel_config;
-        ADC_DRV_InitChanStruct(&adc_channel_config);
-        adc_channel_config.channel = ADC_INPUTCHAN_EXT12; // Corresponds to your configured ADC pin
+    {     
+        // --- Read Temperature from Sensor --
         ADC_DRV_ConfigChan(0, 0, &adc_channel_config);
         ADC_DRV_WaitConvDone(0);
         ADC_DRV_GetChanResult(0, 0, &g_adc_result);
@@ -221,3 +223,4 @@ void LCD_Init(void)
     LCD_SendCommand(LCD_ENTRY_MODE_SET | 0x02);  // Increment cursor, no display shift
     LCD_SendCommand(LCD_RETURN_HOME);            // Return cursor to home position
 }
+
